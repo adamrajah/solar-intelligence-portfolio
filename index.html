@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071321">
+  <meta name="description" content="Solar Intelligence: student-built ESP32, Arduino, IoT and smart automation projects.">
+  <title>Solar Intelligence | Electronics & IoT Portfolio</title>
+  <style>
+    :root {
+      --bg: #071321;
+      --panel: #101f31;
+      --panel-2: #13273c;
+      --line: #2a4056;
+      --text: #f4f8fe;
+      --muted: #a7bed3;
+      --cyan: #62e3ed;
+      --yellow: #ffd269;
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible, input:focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 4px;
+    }
+    .container { max-width: 1120px; margin-inline: auto; padding-inline: 22px; }
+    .skip { position: absolute; left: -9999px; top: 10px; }
+    .skip:focus { left: 10px; z-index: 50; background: white; color: black; padding: 8px; }
+    .nav {
+      background: rgba(7, 19, 33, .93);
+      border-bottom: 1px solid rgba(150, 183, 214, .15);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 76px;
+      gap: 20px;
+    }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 1.05rem; font-weight: 800; letter-spacing: -.025em; }
+    .brand-mark {
+      display: inline-grid; place-items: center;
+      width: 38px; height: 38px; border-radius: 12px;
+      color: #17263b; background: linear-gradient(135deg, #ffdc7b, #faac4c);
+      box-shadow: 0 3px 20px rgba(255, 210, 105, .18);
+      font-size: 21px;
+    }
+    .links { display: flex; align-items: center; gap: 24px; color: var(--muted); font-size: .94rem; }
+    .links a:hover, .footer a:hover { color: var(--cyan); }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 86px 0 70px;
+      background: radial-gradient(ellipse at 85% 20%, rgba(40, 151, 164, .16), transparent 45%),
+                  radial-gradient(ellipse at 10% 80%, rgba(255, 210, 105, .07), transparent 45%);
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: 48px; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 9px;
+      background: rgba(98, 227, 237, .08); border: 1px solid rgba(98, 227, 237, .25);
+      border-radius: 99px; padding: 7px 14px; color: var(--cyan); font-size: .84rem; font-weight: 700;
+    }
+    .eyebrow::before { content: ""; width: 7px; height: 7px; background: var(--cyan); border-radius: 50%; }
+    h1 { font-size: clamp(2.65rem, 5.4vw, 5rem); line-height: 1.07; letter-spacing: -.055em; margin: 22px 0 22px; }
+    .gradient-text { color: var(--yellow); }
+    .lead { font-size: 1.12rem; color: var(--muted); max-width: 560px; margin-bottom: 30px; }
+    .buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 20px; border-radius: 12px;
+      border: 1px solid var(--line); font-weight: 700; transition: transform .15s, background .15s;
+    }
+    .button:hover { transform: translateY(-2px); }
+    .button.primary { background: var(--yellow); border-color: var(--yellow); color: #122033; }
+    .button.secondary { background: rgba(255,255,255,.04); }
+    .hero-visual {
+      min-height: 370px; border: 1px solid var(--line); border-radius: 24px;
+      background: linear-gradient(150deg, #162e46, #091727 75%);
+      position: relative; overflow: hidden; display: grid; place-items: center;
+    }
+    .hero-visual::before { content: ""; position: absolute; inset: 0; opacity: .5;
+      background-image: linear-gradient(rgba(101, 171, 205, .09) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(101, 171, 205, .09) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+    .sun { position: absolute; top: 39px; right: 45px; width: 80px; height: 80px;
+      border-radius: 50%; background: #ffe08a; box-shadow: 0 0 35px #ffc75d80, 0 0 100px #fabb4d60; }
+    .panel-wrap { perspective: 650px; transform: translateY(18px); }
+    .solar-panel {
+      width: 240px; height: 174px; border: 9px solid #8caab8; border-radius: 8px;
+      background: repeating-linear-gradient(90deg, transparent 0 45px, #82b0d0 45px 48px),
+                  repeating-linear-gradient(0deg, transparent 0 38px, #82b0d0 38px 41px),
+                  linear-gradient(135deg, #1c6685, #0b344e);
+      transform: rotateX(23deg) rotateY(-22deg) rotateZ(-8deg);
+      box-shadow: 18px 23px 0 -8px #0d2636, 18px 28px 35px #0008;
+      position: relative;
+    }
+    .solar-panel::after { content: ""; width: 10px; height: 82px; position: absolute; background: #68889b;
+      left: 47%; top: 100%; transform: translateY(1px); z-index: -1; }
+    .visual-caption { position: absolute; bottom: 24px; left: 24px; right: 24px; display: flex;
+      gap: 10px; justify-content: space-between; align-items: center; font-size: .82rem; color: var(--muted); }
+    .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); margin-right: 6px; }
+    .section { padding: 76px 0; }
+    .section-header { margin-bottom: 30px; }
+    .section-kicker { color: var(--cyan); text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .15em; }
+    h2 { font-size: clamp(1.85rem, 3.5vw, 2.8rem); letter-spacing: -.045em; margin: 8px 0; line-height: 1.15; }
+    .section-header p { color: var(--muted); max-width: 650px; margin-top: 12px; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card { background: var(--panel); padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); }
+    .card-icon { font-size: 2rem; margin-bottom: 14px; }
+    .card h3 { margin: 0 0 8px; font-size: 1.15rem; }
+    .card p { color: var(--muted); margin: 0 0 22px; font-size: .94rem; }
+    .tag { display: inline-block; background: #1b3748; color: #9fe9f1; border-radius: 6px;
+      font-size: .75rem; font-weight: 700; padding: 5px 9px; margin: 0 6px 6px 0; }
+    .demo-section { background: #0b1a2a; border-top: 1px solid rgba(150,183,214,.10); border-bottom: 1px solid rgba(150,183,214,.10); }
+    .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: stretch; }
+    .demo-visual { min-height: 310px; border-radius: var(--radius); border: 1px solid var(--line);
+      background: radial-gradient(circle at 70% 23%, rgba(255,214,113,.11), transparent 33%), #102338;
+      position: relative; display: grid; place-items: center; overflow: hidden; }
+    .demo-visual .panel-wrap { transform: translateY(0); }
+    .demo-visual .solar-panel { transform: rotateX(var(--vert, 25deg)) rotateY(var(--horiz, 0deg)); transition: transform .18s ease; }
+    .demo-controls { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; }
+    .demo-controls h3 { margin: 0 0 9px; font-size: 1.4rem; }
+    .demo-controls > p { color: var(--muted); font-size: .93rem; margin: 0 0 26px; }
+    .control-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; font-size: .92rem; }
+    output { font-weight: 800; color: var(--yellow); font-variant-numeric: tabular-nums; }
+    input[type="range"] { width: 100%; accent-color: var(--cyan); cursor: pointer; margin: 0 0 25px; }
+    .demo-note { color: var(--muted); font-size: .8rem; background: #192c3f; padding: 12px; border-radius: 10px; }
+    .about-layout { display: grid; grid-template-columns: 1.15fr .85fr; gap: 24px; align-items: stretch; }
+    .about-copy, .toolbox { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; }
+    .about-copy p { color: var(--muted); margin-bottom: 0; }
+    .toolbox h3 { margin: 0 0 14px; }
+    .tool-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tool-tags span { border: 1px solid #37536a; border-radius: 99px; padding: 7px 12px; font-size: .87rem; color: #d7e7f5; }
+    .cta { text-align: center; padding: 50px 24px; border-radius: 24px;
+      background: linear-gradient(135deg, #164356, #122b3f); border: 1px solid #336779; }
+    .cta h2 { margin-top: 0; }
+    .cta p { max-width: 550px; margin: 0 auto 24px; color: #c4e4ec; }
+    .footer { border-top: 1px solid var(--line); margin-top: 74px; padding: 24px 0; }
+    .footer-inner { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; color: var(--muted); font-size: .86rem; }
+    @media (max-width: 860px) {
+      .hero-grid, .demo-grid, .about-layout { grid-template-columns: 1fr; }
+      .hero { padding-top: 60px; }
+      .hero-visual { min-height: 310px; }
+      .cards { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 580px) {
+      .container { padding-inline: 17px; }
+      .nav-inner { min-height: 64px; }
+      .links { gap: 12px; font-size: .82rem; }
+      .links a:first-child { display: none; }
+      .brand { font-size: .95rem; }
+      .hero { padding: 48px 0; }
+      .cards { grid-template-columns: 1fr; }
+      .section { padding: 54px 0; }
+      .hero-visual { min-height: 280px; }
+      .sun { width: 64px; height: 64px; right: 30px; }
+      .solar-panel { width: 195px; height: 145px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="nav">
+    <nav class="nav-inner container" aria-label="Main navigation">
+      <a class="brand" href="#home"><span class="brand-mark" aria-hidden="true">☀</span> Solar Intelligence</a>
+      <div class="links">
+        <a href="#projects">Projects</a>
+        <a href="#tracker-demo">Tracker Demo</a>
+        <a href="#about">About</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="home">
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">Student innovation • Electronics & IoT</span>
+          <h1>Ideas powered by <span class="gradient-text">intelligence.</span></h1>
+          <p class="lead">Exploring how ESP32, Arduino, sensors and smart automation can solve everyday problems — one project at a time.</p>
+          <div class="buttons">
+            <a class="button primary" href="#projects">Explore Projects ↗</a>
+            <a class="button secondary" data-github-profile href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub Profile ↗</a>
+          </div>
+        </div>
+        <div class="hero-visual" role="img" aria-label="Stylized solar panel facing sunlight">
+          <div class="sun" aria-hidden="true"></div>
+          <div class="panel-wrap" aria-hidden="true"><div class="solar-panel"></div></div>
+          <div class="visual-caption"><span><span class="live-dot"></span> DUAL-AXIS SOLAR TRACKER</span><span>ESP32 PROJECT</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="projects">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-kicker">What I'm building</span>
+          <h2>Featured Projects</h2>
+          <p>A growing collection of real-world electronics ideas, experiments and prototypes.</p>
+        </div>
+        <div class="cards">
+          <article class="card"><div class="card-icon" aria-hidden="true">☀️</div><h3>Dual-Axis Solar Tracker</h3><p>An ESP32-based concept that uses four LDR sensors and two servos to orient a panel toward brighter light, with an OLED dashboard.</p><span class="tag">ESP32</span><span class="tag">LDR</span><span class="tag">OLED</span></article>
+          <article class="card"><div class="card-icon" aria-hidden="true">🏠</div><h3>Smart Home Automation</h3><p>Exploring Wi-Fi controlled appliances, relay switching and intelligent lighting with microcontrollers.</p><span class="tag">ESP8266</span><span class="tag">IoT</span></article>
+          <article class="card"><div class="card-icon" aria-hidden="true">🛡️</div><h3>Smart Security Boxes</h3><p>Prototyping environmental and motion monitoring using PIR, air-quality, gas and flame sensors.</p><span class="tag">Sensors</span><span class="tag">ESP32</span></article>
+          <article class="card"><div class="card-icon" aria-hidden="true">🌱</div><h3>Smart Plant Watering</h3><p>Testing automated watering logic using soil moisture readings, a relay and a pump.</p><span class="tag">Automation</span><span class="tag">Soil Sensor</span></article>
+          <article class="card"><div class="card-icon" aria-hidden="true">🚪</div><h3>Smart Gate & Rain System</h3><p>Experimenting with distance detection, rain sensing and servo-driven mechanisms.</p><span class="tag">Arduino Nano</span><span class="tag">Servo</span></article>
+          <article class="card"><div class="card-icon" aria-hidden="true">📷</div><h3>Child Arrival Safety</h3><p>Developing an RFID-based arrival concept with an ESP32-CAM and smart notifications.</p><span class="tag">RFID</span><span class="tag">ESP32-CAM</span></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section demo-section" id="tracker-demo">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-kicker">Interactive preview</span>
+          <h2>Explore Dual-Axis Tracking</h2>
+          <p>Move the sliders to see how a solar panel can turn horizontally and tilt vertically.</p>
+        </div>
+        <div class="demo-grid">
+          <div class="demo-visual" role="img" aria-label="Illustration of a solar panel that rotates with the sliders">
+            <div class="panel-wrap"><div class="solar-panel" id="demo-panel"></div></div>
+          </div>
+          <div class="demo-controls">
+            <h3>Solar Tracker Simulator</h3>
+            <p>Try both axes and watch the panel respond.</p>
+            <label class="control-row" for="horizontal">Horizontal rotation <output id="h-value" for="horizontal">0°</output></label>
+            <input type="range" id="horizontal" min="-60" max="60" value="0" step="1">
+            <label class="control-row" for="vertical">Vertical tilt <output id="v-value" for="vertical">25°</output></label>
+            <input type="range" id="vertical" min="-5" max="65" value="25" step="1">
+            <div class="demo-note">This is a visual simulation, not a live connection to a real ESP32 or sensor readings.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="container about-layout">
+        <div class="about-copy">
+          <span class="section-kicker">About this portfolio</span>
+          <h2>Curiosity meets engineering.</h2>
+          <p>I'm learning electronics, programming and IoT by turning ideas into hands-on projects. This website documents the prototypes, experiments and skills I'm developing. Some projects are still in progress, and I'll keep improving them as I learn.</p>
+        </div>
+        <div class="toolbox">
+          <h3>Technologies I'm Exploring</h3>
+          <div class="tool-tags"><span>ESP32</span><span>ESP8266</span><span>Arduino</span><span>C++</span><span>HTML</span><span>CSS</span><span>JavaScript</span><span>OLED</span><span>IoT Sensors</span><span>Servo Motors</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="cta">
+        <h2>Explore the journey.</h2>
+        <p>From simple sensor tests to complete automation ideas, every project is another chance to learn something new.</p>
+        <a class="button primary" data-github-profile href="https://github.com" target="_blank" rel="noopener noreferrer">See GitHub ↗</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>© <span id="year">2026</span> Solar Intelligence. Built with HTML, CSS & JavaScript.</span>
+      <span>Made for learning, experimenting and building.</span>
+    </div>
+  </footer>
+
+  <script>
+    // IMPORTANT: Replace YOUR_USERNAME with your real GitHub username.
+    const githubUsername = "YOUR_USERNAME";
+    const githubUrl = githubUsername === "YOUR_USERNAME"
+      ? "https://github.com"
+      : `https://github.com/${encodeURIComponent(githubUsername)}`;
+    document.querySelectorAll("[data-github-profile]").forEach(link => {
+      link.href = githubUrl;
+    });
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+    const panel = document.getElementById("demo-panel");
+    const horizontal = document.getElementById("horizontal");
+    const vertical = document.getElementById("vertical");
+    const hValue = document.getElementById("h-value");
+    const vValue = document.getElementById("v-value");
+
+    function updatePanel() {
+      const h = Number(horizontal.value);
+      const v = Number(vertical.value);
+      panel.style.setProperty("--horiz", `${h}deg`);
+      panel.style.setProperty("--vert", `${v}deg`);
+      hValue.textContent = `${h}°`;
+      vValue.textContent = `${v}°`;
+    }
+    horizontal.addEventListener("input", updatePanel);
+    vertical.addEventListener("input", updatePanel);
+    updatePanel();
+  </script>
+</body>
+</html>
